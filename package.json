@@ -1,0 +1,6 @@
+{
+  "name": "gdx-datapub",
+  "dependencies": {
+    "datapub': "https://github.com/datopian/datapub"
+  }
+}
