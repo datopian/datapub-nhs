@@ -1,4 +1,4 @@
-GDx data publishing app in React using DataPub.js framework.
+NHS data publishing app in React using DataPub.js framework.
 
 At present it is only the resource editor.
 
@@ -9,14 +9,16 @@ You can install into the CKAN instance using the ckanext-datapub extension.
 First, clone the repo via git:
 
 ```bash
-$ git clone git@github.com:datopian/datapub-gdx.git
+$ git clone git@github.com:datopian/datapub-nhs.git
 ```
 
-And then install dependencies with npm.
+And then install dependencies with npm or yarn.
 
 ```bash
-$ cd datapub-gdx
+$ cd datapub-nhs
 $ npm install
+$ #or
+$ yarn
 ```
 
 ## Try it out
@@ -38,7 +40,6 @@ Or (if deployment to github pages is setup) you can visit: ...
 ## Developer
 
 ### Tests
-
 
 ```bash
 $ npm test

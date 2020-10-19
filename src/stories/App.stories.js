@@ -1,10 +1,9 @@
-
-import React from 'react';
-import App from '../App';
+import React from "react";
+import App from "../App";
 
 export default {
-  title: 'Templates',
+  title: "Templates",
   component: App,
 };
 
-export const AppGDX = () => <App config={{}}/>;
+export const AppNHS = () => <App config={{}} />;

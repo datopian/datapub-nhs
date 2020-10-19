@@ -217,7 +217,7 @@ export class ResourceEditor extends React.Component {
           }}
         >
           <div className="upload-header">
-            <h2 className="upload-header__title">Datapub GDX</h2>
+            <h2 className="upload-header__title">Datapub NHS</h2>
           </div>
 
           <Upload
@@ -234,7 +234,7 @@ export class ResourceEditor extends React.Component {
               metadata={this.state.resource}
               handleChange={this.handleChangeMetadata}
             />
-           
+
             {!this.state.isResourceEdit ? (
               <button disabled={!success} className="btn">
                 Save and Publish
