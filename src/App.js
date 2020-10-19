@@ -2,7 +2,8 @@ import React from "react";
 import { Client } from "ckanClient";
 import PropTypes from "prop-types";
 import frictionlessCkanMapper from "frictionless-ckan-mapper-js";
-import { Upload, Metadata } from "datapub";
+import { Upload } from "datapub";
+import Metadata from "./components/Metadata";
 
 import "./App.css";
 

@@ -5592,9 +5592,9 @@ data-urls@^1.0.0, data-urls@^1.1.0:
     url-join "4.0.1"
     xlsx "0.16.7"
 
-"datapub@git+https://github.com/datopian/datapub.git":
+"datapub@git+https://github.com/datopian/datapub.git#c98a15192c8a29f793c7f21565451c352538914b":
   version "0.1.0"
-  resolved "git+https://github.com/datopian/datapub.git#5fa40753e8595530bce48c7950a5972af533fc2b"
+  resolved "git+https://github.com/datopian/datapub.git#c98a15192c8a29f793c7f21565451c352538914b"
   dependencies:
     axios "^0.19.2"
     ckanClient "git+https://github.com/datopian/ckan-client-js.git"
