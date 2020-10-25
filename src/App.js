@@ -2,15 +2,18 @@ import React from "react";
 import { Client } from "ckanClient";
 import PropTypes from "prop-types";
 import frictionlessCkanMapper from "frictionless-ckan-mapper-js";
-import { Upload } from "datapub";
+import { v4 as uuidv4 } from "uuid";
+import { Upload, TableSchema } from "datapub";
+import SelectSchema from "./components/SelectSchema";
 import Metadata from "./components/Metadata";
-
 import "./App.css";
+import { removeHyphen } from "./utils";
 
 export class ResourceEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      resources: [],
       datasetId: this.props.config.datasetId,
       resourceId: "",
       resource: this.props.resource || {},
@@ -46,43 +49,19 @@ export class ResourceEditor extends React.Component {
       `${lfs}`
     );
 
+    // get dataset
+    const { result } = await client.action("package_show", {
+      id: datasetId,
+    });
+
+    const resources = result.resources || [];
+
+    this.setState({ client, resources });
+
     //Check if the user is editing resource
     if (resourceId) {
-      const resource = await client.action("resource_show", { id: resourceId });
-      const resourceSchema = await client.action("resource_schema_show", {
-        id: resourceId,
-      });
-      const resourceSample = await client.action("resource_sample_show", {
-        id: resourceId,
-      });
-
-      let resourceCopy = resource.result;
-      let sampleCopy = [];
-
-      try {
-        // push the values to an array
-        for (const property in resourceSample.result) {
-          sampleCopy.push(resourceSample.result[property]);
-        }
-        // push sample as an array to be able to render in tableschema component
-        resourceCopy.sample = sampleCopy;
-        resourceCopy.schema = resourceSchema.result;
-      } catch (e) {
-        console.error(e);
-        //generate empty values not to break the tableschema component
-        resourceCopy.schema = { fields: [] };
-        resourceCopy.sample = [];
-      }
-
-      return this.setState({
-        client,
-        resourceId,
-        resource: resourceCopy,
-        isResourceEdit: true,
-      });
+      this.setResource(resourceId);
     }
-
-    this.setState({ client });
   }
 
   metadataHandler(resource) {
@@ -145,7 +124,10 @@ export class ResourceEditor extends React.Component {
     let data = { ...ckanResource.sample };
     //delete sample because is an invalid format
     delete ckanResource.sample;
-
+    //generate an unique id for bq_table_name property
+    let bqTableName = ckanResource.bq_table_name
+      ? ckanResource.bq_table_name
+      : uuidv4();
     // create a copy from ckanResource to add package_id, name, url, sha256,size, lfs_prefix, url, url_type
     // without this properties ckan-blob-storage doesn't work properly
     let ckanResourceCopy = {
@@ -157,6 +139,7 @@ export class ResourceEditor extends React.Component {
       lfs_prefix: `${organizationId}/${datasetId}`,
       url: resource.name,
       url_type: "upload",
+      bq_table_name: removeHyphen(bqTableName),
       sample: data,
     };
 
@@ -202,6 +185,63 @@ export class ResourceEditor extends React.Component {
     this.setState({ resourceId });
   };
 
+  onSchemaSelected = async (resourceId) => {
+    const { sample, schema } = await this.getSchemaWithSample(resourceId);
+    return this.setState({
+      resource: {
+        ...this.state.resource,
+        schema,
+        sample,
+      },
+      isResourceEdit: true,
+    });
+  };
+
+  getSchemaWithSample = async (resourceId) => {
+    const { client } = this.state;
+
+    const resourceSchema = await client.action("resource_schema_show", {
+      id: resourceId,
+    });
+    const resourceSample = await client.action("resource_sample_show", {
+      id: resourceId,
+    });
+
+    const sample = [];
+
+    const schema = resourceSchema.result || { fields: [] };
+
+    try {
+      // push the values to an array
+      for (const property in resourceSample.result) {
+        sample.push(resourceSample.result[property]);
+      }
+    } catch (e) {
+      console.error(e);
+      //generate empty values not to break the tableschema component
+    }
+
+    return { schema, sample };
+  };
+
+  setResource = async (resourceId) => {
+    const { client } = this.state;
+
+    const { result } = await client.action("resource_show", { id: resourceId });
+
+    let resourceCopy = {
+      ...result,
+      ...(await this.getSchemaWithSample(resourceId)),
+    };
+
+    return this.setState({
+      client,
+      resourceId,
+      resource: resourceCopy,
+      isResourceEdit: true,
+    });
+  };
+
   render() {
     const { success } = this.state.ui;
 
@@ -218,7 +258,7 @@ export class ResourceEditor extends React.Component {
           }}
         >
           <div className="upload-header">
-            <h2 className="upload-header__title">Datapub NHS</h2>
+            <h2 className="upload-header__title">Resource Editor</h2>
           </div>
 
           <Upload
@@ -235,7 +275,18 @@ export class ResourceEditor extends React.Component {
               metadata={this.state.resource}
               handleChange={this.handleChangeMetadata}
             />
-
+            <div className="app-form-grid app-divider">
+              <SelectSchema
+                resources={this.state.resources}
+                onSchemaSelected={this.onSchemaSelected}
+              />
+            </div>
+            {this.state.resource.schema && (
+              <TableSchema
+                schema={this.state.resource.schema}
+                data={this.state.resource.sample || []}
+              />
+            )}
             {!this.state.isResourceEdit ? (
               <button disabled={!success} className="btn">
                 Save and Publish
@@ -266,10 +317,10 @@ export class ResourceEditor extends React.Component {
 ResourceEditor.defaultProps = {
   config: {
     authToken: "be270cae-1c77-4853-b8c1-30b6cf5e9878",
-    api: "http://127.0.0.1:5000",
-    lfs: "http://localhost:9419", // Feel free to modify this
+    api: "http://localhost:5000",
+    lfs: "http://localhost:5001", // Feel free to modify this
     organizationId: "myorg",
-    datasetId: "sample_1",
+    datasetId: "data-test-2",
   },
 };
 
