@@ -29,7 +29,7 @@ code {
   min-height: 60%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto  300px auto auto;
+  grid-template-rows: auto 300px auto auto;
   grid-template-areas:
     "header header"
     "uploadArea uploadArea"
@@ -120,7 +120,7 @@ code {
   height: 45px;
   font-size: 1.2rem;
   color: #fff;
-  background-color: #00A7E1;
+  background-color: #00a7e1;
   outline: none;
   border: none;
   cursor: pointer;
@@ -147,7 +147,7 @@ code {
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 11px 3px rgba(18, 22, 33, 0.05);
-  background-color: #F11301;
+  background-color: #f11301;
 }
 
 .btn-delete :disabled {
@@ -156,10 +156,49 @@ code {
 }
 
 .btn-delete:hover {
-  background-color: #C70E00;
+  background-color: #c70e00;
 }
 
 .resource-edit-actions {
   display: flex;
   justify-content: space-between;
+}
+.app-form-field {
+  margin-bottom: 20px;
+}
+.app-form-field-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  text-align: left;
+  font-weight: 500;
+  color: #1a3b5d;
+  width: 100%;
+  display: block;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.app-form-field-input {
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  box-shadow: none;
+  border: 1px solid #ced6e0;
+  transition: all 0.3s ease-in-out;
+  font-size: 18px;
+  padding: 5px 15px;
+  background: none;
+  color: #1a3b5d;
+  font-family: "Source Sans Pro", sans-serif;
+  box-sizing: border-box;
+}
+.app-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 20px;
+}
+.app-divider {
+  border-top: 4px solid #f3f3f3;
+  padding-top: 15px;
+  margin-top: 30px;
 }
