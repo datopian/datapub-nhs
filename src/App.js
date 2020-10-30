@@ -169,6 +169,12 @@ export class ResourceEditor extends React.Component {
     }
   };
 
+  setLoading = (isLoading) => {
+    this.setState({
+      ui: { ...this.state.ui, loading: isLoading },
+    });
+  };
+
   handleUploadStatus = (status) => {
     const { ui } = this.state;
     const newUiState = {
@@ -186,14 +192,15 @@ export class ResourceEditor extends React.Component {
   };
 
   onSchemaSelected = async (resourceId) => {
+    this.setLoading(true);
     const { sample, schema } = await this.getSchemaWithSample(resourceId);
+    this.setLoading(false);
     return this.setState({
       resource: {
         ...this.state.resource,
         schema,
         sample,
       },
-      isResourceEdit: true,
     });
   };
 
@@ -243,7 +250,7 @@ export class ResourceEditor extends React.Component {
   };
 
   render() {
-    const { success } = this.state.ui;
+    const { success, loading } = this.state.ui;
 
     return (
       <div className="App">
@@ -288,7 +295,7 @@ export class ResourceEditor extends React.Component {
               />
             )}
             {!this.state.isResourceEdit ? (
-              <button disabled={!success} className="btn">
+              <button disabled={!success || loading} className="btn">
                 Save and Publish
               </button>
             ) : (
