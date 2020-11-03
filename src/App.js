@@ -195,12 +195,9 @@ export class ResourceEditor extends React.Component {
     this.setLoading(true);
     const { sample, schema } = await this.getSchemaWithSample(resourceId);
     this.setLoading(false);
-    return this.setState({
-      resource: {
-        ...this.state.resource,
-        schema,
-        sample,
-      },
+
+    this.setState({
+      resource: Object.assign(this.state.resource, { schema, sample }),
     });
   };
 
