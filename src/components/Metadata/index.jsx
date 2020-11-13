@@ -22,7 +22,7 @@ const Metadata = ({ metadata, handleChange }) => {
       <div className="metadata-form">
         <div className="metadata-input">
           <label className="metadata-label" htmlFor="title">
-            Title:
+            Title
           </label>
           <input
             className="metadata-input__input"
@@ -35,7 +35,7 @@ const Metadata = ({ metadata, handleChange }) => {
         </div>
         <div className="metadata-input">
           <label className="metadata-label" htmlFor="description">
-            Description:
+            Description
           </label>
           <input
             className="metadata-input__input"
@@ -48,7 +48,7 @@ const Metadata = ({ metadata, handleChange }) => {
         </div>
         <div className="metadata-input">
           <label className="metadata-label" htmlFor="encoding">
-            Encoding:
+            Encoding
           </label>
           <select
             className="metadata-input__input"
@@ -70,7 +70,7 @@ const Metadata = ({ metadata, handleChange }) => {
         </div>
         <div className="metadata-input">
           <label className="metadata-label" htmlFor="format">
-            Format:
+            Format
           </label>
           <select
             className="metadata-input__input"
@@ -97,7 +97,7 @@ const Metadata = ({ metadata, handleChange }) => {
               className="metadata-input"
             >
               <label className="metadata-label" htmlFor="format">
-                {item.label}:
+                {item.label}
               </label>
               <select
                 className="metadata-input__input"

@@ -13,7 +13,7 @@ const SelectSchema = ({ resources, client, onSchemaSelected }) => {
   return (
     <div className="app-form-field">
       <label className="metadata-label">
-        Copy schema from existing resource
+        Copy metadata information from existing resource
       </label>
       <select
         className="app-form-field-input"

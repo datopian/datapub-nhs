@@ -11,9 +11,9 @@ describe("<SelectSchema />", () => {
       <SelectSchema resources={resources} onSchemaSelected={onSchemaSelected} />
     );
 
-    expect(wrapper.contains("Copy schema from existing resource")).toEqual(
-      true
-    );
+    expect(
+      wrapper.contains("Copy metadata information from existing resource")
+    ).toEqual(true);
     expect(wrapper.contains("sample.csv")).toEqual(true);
     expect(wrapper.find("select")).toHaveLength(1);
     expect(wrapper.find("option")).toHaveLength(2);
