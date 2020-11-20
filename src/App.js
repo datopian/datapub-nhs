@@ -3,9 +3,10 @@ import { Client } from "ckanClient";
 import PropTypes from "prop-types";
 import frictionlessCkanMapper from "frictionless-ckan-mapper-js";
 import { v4 as uuidv4 } from "uuid";
-import { Upload, TableSchema } from "datapub";
+import { TableSchema } from "datapub";
 import SelectSchema from "./components/SelectSchema";
 import Metadata from "./components/Metadata";
+import Upload from "./components/Upload";
 import "./App.css";
 import { removeHyphen } from "./utils";
 
