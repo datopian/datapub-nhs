@@ -15,4 +15,4 @@ const removeHyphen = (id) => {
 };
 
 export { removeHyphen,
-  onFormatBytes };
+        onFormatBytes };
