@@ -13,10 +13,10 @@
 }
 
 .svg-circle-text {
-    font-size: 0.68rem;
+    font-size: 1.2rem;
     text-anchor: middle;
     margin-top: 30px;
-    fill:#3F4656;
+    fill:#444;
     font-weight: bold;
 }
 

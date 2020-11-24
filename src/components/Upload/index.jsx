@@ -1,6 +1,6 @@
 import React from "react";
 import * as data from "frictionless.js";
-import toArray from "stream-to-array";
+import { toArray } from "stream-to-array";
 import ProgressBar from "../ProgressBar";
 import { onFormatBytes } from "../../utils";
 import { Choose } from "datapub";
@@ -145,7 +145,7 @@ class Upload extends React.Component {
                     <div>
                       <ProgressBar
                         progress={Math.round(this.state.loaded)}
-                        size={50}
+                        size={100}
                         strokeWidth={5}
                         circleOneStroke="#d9edfe"
                         circleTwoStroke={"#7ea9e1"}
