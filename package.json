@@ -7,7 +7,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "ckanClient": "git+https://github.com/datopian/ckan-client-js.git#bfa869866c3bf50ada2bbc30376e0191c9c263c7",
-    "datapub": "git+https://github.com/datopian/datapub.git#320d2d786ef504157e6b24e7d5a8a67dc4eebdd4",
+    "datapub": "git+https://github.com/datopian/datapub.git#dfdaf54805cf71b1f9edf58afe919c4fe79ef048",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3"
