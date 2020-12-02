@@ -52,7 +52,7 @@ class Upload extends React.Component {
       formattedSize,
     });
 
-    // await this.onClickHandler();
+    await this.onClickHandler();
   };
 
   onHashProgress = (progress) => {
