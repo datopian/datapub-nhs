@@ -1,6 +1,5 @@
 import React from "react";
 import * as data from "frictionless.js";
-import { toArray } from "stream-to-array";
 import ProgressBar from "../ProgressBar";
 import { onFormatBytes } from "../../utils";
 import { Choose } from "datapub";
@@ -20,6 +19,8 @@ class Upload extends React.Component {
       fileExists: false,
       loading: false,
       timeRemaining: 0,
+      hashInProgress: false,
+      hashLoaded: 0
     };
   }
 
@@ -35,7 +36,10 @@ class Upload extends React.Component {
         console.warn(e);
       }
       formattedSize = onFormatBytes(file.size);
-      const hash = await file.hash('sha256');
+      let self = this;
+      const hash = await file.hash("sha256", (progress) => {
+        self.onHashProgress(progress);
+      });
       this.props.metadataHandler(Object.assign(file.descriptor, { hash }));
     }
 
@@ -48,7 +52,14 @@ class Upload extends React.Component {
       formattedSize,
     });
 
-    await this.onClickHandler();
+    // await this.onClickHandler();
+  };
+
+  onHashProgress = (progress) => {
+    if (progress === 100){
+      this.setState({hashInProgress: false})
+    }
+    this.setState({hashLoaded: progress, hashInProgress: true})   
   };
 
   onUploadProgress = (progressEvent) => {
@@ -123,6 +134,7 @@ class Upload extends React.Component {
       timeRemaining,
       selectedFile,
       formattedSize,
+      hashInProgress
     } = this.state;
     return (
       <div className="upload-area">
@@ -130,6 +142,30 @@ class Upload extends React.Component {
           onChangeHandler={this.onChangeHandler}
           onChangeUrl={(event) => console.log("Get url:", event.target.value)}
         />
+          <div className="upload-area__info">
+          {hashInProgress && (
+            <>
+              <ul className="upload-list">
+                <li className="list-item">
+                  <div className="upload-list-item">
+                    <div>
+                      <p className="upload-file-name">Computing file hash...</p>
+                    </div>
+                    <div>
+                      <ProgressBar
+                        progress={Math.round(this.state.hashLoaded)}
+                        size={100}
+                        strokeWidth={5}
+                        circleOneStroke="#d9edfe"
+                        circleTwoStroke={"#7ea9e1"}
+                      />
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </>
+          )}
+        </div>
         <div className="upload-area__info">
           {selectedFile && (
             <>
@@ -137,7 +173,7 @@ class Upload extends React.Component {
                 <li className="list-item">
                   <div className="upload-list-item">
                     <div>
-                      <p className="upload-file-name">{selectedFile.name}</p>
+                      <p className="upload-file-name">Uploading {selectedFile.name}</p>
                       <p className="upload-file-size">{formattedSize}</p>
                     </div>
                     <div>
@@ -154,7 +190,10 @@ class Upload extends React.Component {
                 </li>
               </ul>
               <h2 className="upload-message">
-                {success && !fileExists && !error && "File uploaded successfully"}
+                {success &&
+                  !fileExists &&
+                  !error &&
+                  "File uploaded successfully"}
                 {fileExists && "File uploaded successfully"}
                 {error && "Upload failed"}
               </h2>
