@@ -56,10 +56,11 @@ class Upload extends React.Component {
   };
 
   onHashProgress = (progress) => {
-    if (progress === 100){
-      this.setState({hashInProgress: false})
+    if (progress === 100) {
+      this.setState({ hashInProgress: false });
+    } else {
+      this.setState({ hashLoaded: progress, hashInProgress: true });
     }
-    this.setState({hashLoaded: progress, hashInProgress: true})   
   };
 
   onUploadProgress = (progressEvent) => {
@@ -142,7 +143,7 @@ class Upload extends React.Component {
           onChangeHandler={this.onChangeHandler}
           onChangeUrl={(event) => console.log("Get url:", event.target.value)}
         />
-          <div className="upload-area__info">
+        <div className="upload-area__info">
           {hashInProgress && (
             <>
               <ul className="upload-list">
