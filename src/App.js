@@ -67,10 +67,7 @@ export class ResourceEditor extends React.Component {
 
   metadataHandler(resource) {
     this.setState({
-      resource: {
-        ...resource,
-        title: resource.name,
-      },
+      resource,
     });
   }
 
@@ -129,22 +126,21 @@ export class ResourceEditor extends React.Component {
     //delete sample because is an invalid format
     delete ckanResource.sample;
     //generate an unique id for bq_table_name property
-    let bqTableName = removeHyphen(
-      ckanResource.bq_table_name ? ckanResource.bq_table_name : uuidv4()
-    );
+    let bqTableName = ckanResource.bq_table_name
+      ? ckanResource.bq_table_name
+      : uuidv4();
     // create a copy from ckanResource to add package_id, name, url, sha256,size, lfs_prefix, url, url_type
     // without this properties ckan-blob-storage doesn't work properly
     let ckanResourceCopy = {
       ...ckanResource,
       package_id: this.state.datasetId,
-      name: bqTableName,
-      title: resource.title,
+      name: resource.name || resource.title,
       sha256: resource.hash,
       size: resource.size,
       lfs_prefix: `${organizationId}/${datasetId}`,
       url: resource.name,
       url_type: "upload",
-      bq_table_name: bqTableName,
+      bq_table_name: removeHyphen(bqTableName),
       sample: data,
     };
 
@@ -155,6 +151,7 @@ export class ResourceEditor extends React.Component {
         id: resourceId,
       };
       await client.action("resource_update", ckanResourceCopy);
+
       return (window.location.href = `/dataset/${datasetId}`);
     }
     await client
