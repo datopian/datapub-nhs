@@ -66,7 +66,7 @@ export class ResourceEditor extends React.Component {
   }
 
   metadataHandler(fileResource) {
-    let resource = this.extendResource(fileResource)
+    let resource = this.extendResource(fileResource);
     this.setState({
       resource,
     });
@@ -74,19 +74,20 @@ export class ResourceEditor extends React.Component {
 
   /**
    * Adds a new field bq_table_name to resources and formats name property
-   * @param {Object} resource 
+   * @param {Object} resource
    */
-  extendResource(resource){
-    let newResource = {...resource}
-    newResource.title = resource.name
-    newResource.urlName = resource.name
-    
-    const newName = resource.name.split(".")[0].toUpperCase()
-    newResource.name = newName
-    newResource.bq_table_name = newName
+  extendResource(resource) {
+    let newResource = { ...resource };
+    newResource.title = resource.name;
+    newResource.urlName = resource.name;
 
-    return newResource
+    const newName = resource.name.split(".")[0].toUpperCase();
+    newResource.name = newName;
+    newResource.bq_table_name = newName;
+
+    return newResource;
   }
+
   handleChangeMetadata = (event) => {
     const target = event.target;
     const value = target.value;
@@ -132,6 +133,8 @@ export class ResourceEditor extends React.Component {
     const { client } = this.state;
     const { config } = this.props;
     const { organizationId, datasetId, resourceId } = config;
+    const { urlName } = resource;
+    delete resource.urlName;
 
     const ckanResource = frictionlessCkanMapper.resourceFrictionlessToCkan(
       resource
@@ -154,7 +157,7 @@ export class ResourceEditor extends React.Component {
       sha256: resource.hash,
       size: resource.size,
       lfs_prefix: `${organizationId}/${datasetId}`,
-      url: resource.urlName,
+      url: urlName,
       url_type: "upload",
       bq_table_name: removeHyphen(bqTableName),
       sample: data,
