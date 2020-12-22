@@ -81,10 +81,10 @@ export class ResourceEditor extends React.Component {
     newResource.title = resource.name
     newResource.urlName = resource.name
     
-    let newName = resource.name.split(".")[0].toUpperCase()
+    const newName = resource.name.split(".")[0].toUpperCase()
     newResource.name = newName
     newResource.bq_table_name = newName
-    
+
     return newResource
   }
   handleChangeMetadata = (event) => {
