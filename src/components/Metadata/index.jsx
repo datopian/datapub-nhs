@@ -29,7 +29,7 @@ const Metadata = ({ metadata, handleChange }) => {
             type="text"
             name="title"
             id="title"
-            value={metadata.title}
+            value={metadata.title || metadata.name}
             onChange={handleChange}
           />
         </div>

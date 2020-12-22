@@ -79,10 +79,12 @@ export class ResourceEditor extends React.Component {
   extendResource(resource){
     let newResource = {...resource}
     newResource.title = resource.name
-    newResource.name = resource.name
-
-    let new_name = resource.name.split(".")[0].toUpperCase()
-    newResource.bq_table_name = new_name
+    newResource.urlName = resource.name
+    
+    let newName = resource.name.split(".")[0].toUpperCase()
+    newResource.name = newName
+    newResource.bq_table_name = newName
+    
     return newResource
   }
   handleChangeMetadata = (event) => {
@@ -152,7 +154,7 @@ export class ResourceEditor extends React.Component {
       sha256: resource.hash,
       size: resource.size,
       lfs_prefix: `${organizationId}/${datasetId}`,
-      url: resource.name,
+      url: resource.urlName,
       url_type: "upload",
       bq_table_name: removeHyphen(bqTableName),
       sample: data,
