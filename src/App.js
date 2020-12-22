@@ -65,12 +65,27 @@ export class ResourceEditor extends React.Component {
     }
   }
 
-  metadataHandler(resource) {
+  metadataHandler(fileResource) {
+    let resource = this.extendResource(fileResource)
     this.setState({
       resource,
     });
   }
 
+  /**
+   * Adds a new field bq_table_name to resources and formats name property
+   * @param {Object} resource 
+   */
+  extendResource(resource){
+    let newResource = {...resource}
+    newResource.title = resource.name
+
+    let new_name = resource.name.split(".")[0].toUpperCase()
+    newResource.name = new_name
+    newResource.bq_table_name = new_name
+    return newResource
+  }
+  
   handleChangeMetadata = (event) => {
     const target = event.target;
     const value = target.value;
