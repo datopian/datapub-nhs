@@ -80,11 +80,11 @@ export class ResourceEditor extends React.Component {
     let newResource = { ...resource };
     newResource.title = resource.name;
     newResource.urlName = resource.name;
+    newResource.size = resource.size;
 
     const newName = resource.name.split(".")[0].toUpperCase();
     newResource.name = newName;
     newResource.bq_table_name = newName;
-
     return newResource;
   }
 
@@ -102,7 +102,6 @@ export class ResourceEditor extends React.Component {
 
   handleSubmitMetadata = async () => {
     const { resource, client } = this.state;
-
     await this.createResource(resource);
 
     // Change state of dataset to active if draft atm
