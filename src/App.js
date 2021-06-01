@@ -168,6 +168,9 @@ export class ResourceEditor extends React.Component {
         ...ckanResourceCopy,
         id: resourceId,
       };
+      if(!urlName) {
+        ckanResourceCopy.url = `${resource?.name?.toLowerCase()}.${resource?.format?.toLowerCase()}`
+      }
       await client.action("resource_update", ckanResourceCopy);
 
       return (window.location.href = `/dataset/${datasetId}`);
