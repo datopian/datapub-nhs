@@ -7,6 +7,8 @@ import { TableSchema } from "datapub";
 import Upload from "./components/Upload";
 import SelectSchema from "./components/SelectSchema";
 import Metadata from "./components/Metadata";
+import Spinner from "./components/Spinner";
+
 import "./App.css";
 import { removeHyphen } from "./utils";
 
@@ -27,6 +29,8 @@ export class ResourceEditor extends React.Component {
       },
       client: null,
       isResourceEdit: false,
+      createUpdateLoading: false,
+      deleteLoading: false,
     };
     this.metadataHandler = this.metadataHandler.bind(this);
   }
@@ -50,6 +54,7 @@ export class ResourceEditor extends React.Component {
       `${lfs}`
     );
 
+
     // get dataset
     const { result } = await client.action("package_show", {
       id: datasetId,
@@ -58,6 +63,7 @@ export class ResourceEditor extends React.Component {
     const resources = result.resources || [];
 
     this.setState({ client, resources });
+    
 
     //Check if the user is editing resource
     if (resourceId) {
@@ -131,6 +137,7 @@ export class ResourceEditor extends React.Component {
   createResource = async (resource) => {
     const { client } = this.state;
     const { config } = this.props;
+    this.setState({ createUpdateLoading: true });
     const { organizationId, datasetId, resourceId } = config;
     const { urlName } = resource;
     delete resource.urlName;
@@ -184,6 +191,7 @@ export class ResourceEditor extends React.Component {
 
   deleteResource = async () => {
     const { resource, client, datasetId } = this.state;
+    this.setState({ deleteLoading: true });
     if (window.confirm("Are you sure to delete this resource?")) {
       await client.action("resource_delete", { id: resource.id });
 
@@ -270,6 +278,16 @@ export class ResourceEditor extends React.Component {
 
   render() {
     const { success, loading } = this.state.ui;
+    const { createUpdateLoading, deleteLoading } = this.state;
+
+    const LoadingButton = ({ isLoading, children, ...props }) => (
+      <button {...props}>
+        <div className="spinner-button">
+          {isLoading ? <Spinner size={18}/> : null}
+          {children}
+        </div>
+      </button>
+    );
 
     return (
       <div className="App">
@@ -307,26 +325,35 @@ export class ResourceEditor extends React.Component {
                 onSchemaSelected={this.onSchemaSelected}
               />
             </div>
-            {this.state.resource.schema && (
+            {this.state.resource.schema && Object.keys(this.state.resource.schema).length > 0 && (
               <TableSchema
                 schema={this.state.resource.schema}
                 data={this.state.resource.sample || []}
               />
             )}
             {!this.state.isResourceEdit ? (
-              <button disabled={!success || loading} className="btn">
+             <LoadingButton disabled={!success || createUpdateLoading} 
+                isLoading={createUpdateLoading} 
+                className="btn">
                 Save and Publish
-              </button>
+              </LoadingButton>
             ) : (
               <div className="resource-edit-actions">
-                <button
+                <LoadingButton 
+                  disabled={deleteLoading} 
                   type="button"
                   className="btn btn-delete"
                   onClick={this.deleteResource}
+                  isLoading={deleteLoading}
                 >
                   Delete
-                </button>
-                <button className="btn">Update</button>
+                </LoadingButton>
+                <LoadingButton 
+                disabled={createUpdateLoading} 
+                isLoading={createUpdateLoading}
+                className="btn">
+                  Update
+                </LoadingButton>
               </div>
             )}
           </div>
