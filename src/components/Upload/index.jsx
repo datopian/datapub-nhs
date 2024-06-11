@@ -26,15 +26,31 @@ class Upload extends React.Component {
 
   onChangeHandler = async (event) => {
     let { formattedSize, selectedFile } = this.state;
-
+    const allowedFormats = ['csv', 'tsv', 'xls', 'xlsx', 'zip', 'pdf', 'json', 'geojson'];
+    
     if (event.target.files.length > 0) {
       selectedFile = event.target.files[0];
       const file = data.open(selectedFile);
-      try {
-        await file.addSchema();
-      } catch (e) {
-        console.warn(e);
+
+      if ([ 'csv', 'tsv', 'xls', 'xlsx'].includes(file.descriptor.format)) {
+        try {
+          await file.addSchema();
+        } catch (e) {
+          console.warn(e);
+        }
+       } 
+
+      if (!allowedFormats.includes(file.descriptor.format)) {
+        this.setState({
+          selectedFile,
+          loaded: 0,
+          success: false,
+          fileExists: false,
+          error: 'File format not supported',
+        });
+        return;
       }
+
       formattedSize = onFormatBytes(file.size);
       let self = this;
       const hash = await file.hash("sha256", (progress) => {
@@ -196,7 +212,7 @@ class Upload extends React.Component {
                   !error &&
                   "File uploaded successfully"}
                 {fileExists && "File uploaded successfully"}
-                {error && "Upload failed"}
+                {error && `Upload failed ${typeof error === 'string' ? error : ''}`}
               </h2>
             </>
           )}
