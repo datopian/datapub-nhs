@@ -142,26 +142,35 @@ export class ResourceEditor extends React.Component {
     const { urlName } = resource;
     delete resource.urlName;
 
+    const resourceCopy = JSON.parse(JSON.stringify(resource));
+
+    if (resourceCopy.schema && resourceCopy.schema.fields) {
+      resourceCopy.schema.fields = resourceCopy.schema.fields.map(field => ({
+        ...field,
+        title: field.title || '',
+        description: field.description || '',
+        type: field.type || 'string',
+        format: field.format || 'default'
+      }));
+    }
+
     const ckanResource = frictionlessCkanMapper.resourceFrictionlessToCkan(
-      resource
+      resourceCopy
     );
 
-    //create a valid format from sample
+    // Remove the sample key from the resource object before sending it to the API
     let data = { ...ckanResource.sample };
-    //delete sample because is an invalid format
     delete ckanResource.sample;
-    //generate an unique id for bq_table_name property
     let bqTableName = ckanResource.bq_table_name
       ? ckanResource.bq_table_name
       : uuidv4();
-    // create a copy from ckanResource to add package_id, name, url, sha256,size, lfs_prefix, url, url_type
-    // without this properties ckan-blob-storage doesn't work properly
+      
     let ckanResourceCopy = {
       ...ckanResource,
       package_id: this.state.datasetId,
-      name: resource.name || resource.title,
-      sha256: resource.hash,
-      size: resource.size,
+      name: resourceCopy.name || resourceCopy.title,
+      sha256: resourceCopy.hash,
+      size: resourceCopy.size,
       lfs_prefix: `${organizationId}/${datasetId}`,
       url: urlName,
       url_type: "upload",
@@ -169,14 +178,13 @@ export class ResourceEditor extends React.Component {
       sample: data,
     };
 
-    //Check if the user is editing resource, call resource_update and redirect to the dataset page
     if (resourceId) {
       ckanResourceCopy = {
         ...ckanResourceCopy,
         id: resourceId,
       };
       if(!urlName) {
-        ckanResourceCopy.url = `${resource?.name?.toLowerCase()}.${resource?.format?.toLowerCase()}`
+        ckanResourceCopy.url = `${resourceCopy?.name?.toLowerCase()}.${resourceCopy?.format?.toLowerCase()}`
       }
       await client.action("resource_update", ckanResourceCopy);
 
@@ -226,9 +234,52 @@ export class ResourceEditor extends React.Component {
     const { sample, schema } = await this.getSchemaWithSample(resourceId);
     this.setLoading(false);
 
-    this.setState({
-      resource: Object.assign(this.state.resource, { schema, sample }),
-    });
+    // If the current resource already has a schema with fields, we need to merge them properly
+    // to preserve any manually added fields
+    let newResource = {...this.state.resource};
+
+    if (newResource.schema && newResource.schema.fields && schema.fields) {
+      // Create a map of existing fields by name for easy lookup
+      const existingFieldsMap = {};
+      newResource.schema.fields.forEach(field => {
+        existingFieldsMap[field.name] = field;
+      });
+
+      // Create a new fields array that preserves both template fields and any new fields
+      const mergedFields = schema.fields.map(templateField => {
+        // If this field exists in both schemas, preserve any manually entered data
+        if (existingFieldsMap[templateField.name]) {
+          return {
+            ...templateField,
+            title: existingFieldsMap[templateField.name].title || templateField.title,
+            description: existingFieldsMap[templateField.name].description || templateField.description,
+            type: existingFieldsMap[templateField.name].type || templateField.type,
+            format: existingFieldsMap[templateField.name].format || templateField.format
+          };
+        }
+        return templateField;
+      });
+
+      // Add any new fields that weren't in the template
+      newResource.schema.fields.forEach(field => {
+        const fieldExists = schema.fields.some(templateField => templateField.name === field.name);
+        if (!fieldExists) {
+          mergedFields.push(field);
+        }
+      });
+
+      // Update the schema with merged fields
+      newResource.schema = {
+        ...schema,
+        fields: mergedFields
+      };
+      newResource.sample = sample;
+    } else {
+      // If there's no existing schema, just use the template schema
+      newResource = Object.assign(newResource, { schema, sample });
+    }
+
+    this.setState({ resource: newResource });
   };
 
   getSchemaWithSample = async (resourceId) => {
