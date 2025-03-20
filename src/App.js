@@ -169,8 +169,6 @@ export class ResourceEditor extends React.Component {
       ...ckanResource,
       package_id: this.state.datasetId,
       name: resourceCopy.name || resourceCopy.title,
-      sha256: resourceCopy.hash,
-      size: resourceCopy.size,
       lfs_prefix: `${organizationId}/${datasetId}`,
       url: urlName,
       url_type: "upload",
